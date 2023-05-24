@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AnyZodObject } from 'zod';
 import jwt from 'jsonwebtoken';
 import { config } from '../config';
-import { access } from 'fs/promises';
 const verifyAuth = (req: Request, res: Response, next: NextFunction) => {
 	let refreshToken = '';
 	let accessToken = '';
@@ -14,12 +12,10 @@ const verifyAuth = (req: Request, res: Response, next: NextFunction) => {
 		};
 		if (!valid) {
 			refreshToken = req.cookies.refresh_token as string;
-			console.log(refreshToken);
 			const isvalid = jwt.verify(refreshToken, config.privateKey) as {
 				email: string;
 			};
 			if (isvalid) {
-				console.log(accessToken);
 				accessToken = jwt.sign({ email: isvalid.email }, config.privateKey);
 				res.cookie('access_token', accessToken, {
 					maxAge: 1000 * 60,

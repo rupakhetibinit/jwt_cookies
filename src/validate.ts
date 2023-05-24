@@ -5,7 +5,6 @@ const validate =
 	(schema: AnyZodObject) =>
 	(req: Request, res: Response, next: NextFunction) => {
 		try {
-			console.log(req.body);
 			schema.parse(req.body);
 			next();
 		} catch (e: any) {
