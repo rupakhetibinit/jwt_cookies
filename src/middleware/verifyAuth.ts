@@ -1,32 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config';
-const verifyAuth = (req: Request, res: Response, next: NextFunction) => {
-	let refreshToken = '';
-	let accessToken = '';
-	try {
-		accessToken = req.cookies.access_token;
+import ApplicationError from '../error';
 
-		const valid = jwt.verify(accessToken, config.privateKey) as {
-			email: string;
-		};
-		if (!valid) {
-			refreshToken = req.cookies.refresh_token as string;
-			const isvalid = jwt.verify(refreshToken, config.privateKey) as {
-				email: string;
-			};
-			if (isvalid) {
-				accessToken = jwt.sign({ email: isvalid.email }, config.privateKey);
-				res.cookie('access_token', accessToken, {
-					maxAge: 1000 * 60,
-				});
-				next();
-			}
-			return res.status(401).send('nooooooooooooooo');
+const verifyAuth = async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		if (!req.headers.authorization) {
+			throw new ApplicationError('Bearer token not sent in header', 401);
 		}
+		const accessToken = req.headers.authorization.split(' ')[1];
+		const decoded = jwt.verify(accessToken, config.privateKey);
+		if (decoded) {
+			res.locals.user.email = decoded;
+		}
+		// if (!verified) throw new ApplicationError('Token invalid', 401);
 		next();
-	} catch (e: any) {
-		return res.status(400).send(e.message);
+	} catch (error) {
+		next(error);
 	}
 };
 
