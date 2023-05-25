@@ -2,6 +2,11 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config';
 import ApplicationError from '../error';
+import { z } from 'zod';
+
+const decodedSchema = z.object({
+	email: z.string().email(),
+});
 
 const verifyAuth = async (req: Request, res: Response, next: NextFunction) => {
 	try {
@@ -10,10 +15,13 @@ const verifyAuth = async (req: Request, res: Response, next: NextFunction) => {
 		}
 		const accessToken = req.headers.authorization.split(' ')[1];
 		const decoded = jwt.verify(accessToken, config.privateKey);
-		if (decoded) {
-			res.locals.user.email = decoded;
+
+		const parsed = decodedSchema.safeParse(decoded);
+		console.log(parsed);
+		if (!parsed.success) {
+			throw new ApplicationError('JWT Malformed. Login again,401');
 		}
-		// if (!verified) throw new ApplicationError('Token invalid', 401);
+		res.locals.user = decoded;
 		next();
 	} catch (error) {
 		next(error);

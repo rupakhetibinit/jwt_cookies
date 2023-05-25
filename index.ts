@@ -1,5 +1,4 @@
 import express, { NextFunction, Request, Response } from 'express';
-import 'express-async-errors';
 import userRoute from './src/routes/userRoute';
 import cookieParser from 'cookie-parser';
 const app = express();
