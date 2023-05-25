@@ -3,11 +3,13 @@
 		"outDir": "dist",
 		"incremental": true,
 		"target": "es6",
-		"module": "commonjs",
+		"module": "CommonJS",
 		"strict": true,
+		"strictNullChecks": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
+		"noUncheckedIndexedAccess": true,
 		"types": ["./index.d.ts"]
 	}
 }
