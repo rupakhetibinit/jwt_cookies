@@ -35,14 +35,12 @@ export async function createUser(input: UserInput) {
 }
 
 export async function loginUser(input: UserInput) {
-	const user = await prisma.user.findUniqueOrThrow({
+	const user = await prisma.user.findUnique({
 		where: {
 			email: input.email,
 		},
 	});
-	console.log(user);
 	if (!user) throw new ApplicationError("User doesn't exist", 404);
-	console.log(user.password, input.password);
 
 	const verified = await argon2.verify(user.password, input.password);
 
