@@ -6,6 +6,7 @@ const app = express();
 import dotenv from 'dotenv';
 import ApplicationError from './src/error';
 import { TokenExpiredError } from 'jsonwebtoken';
+import { ZodError } from 'zod';
 dotenv.config();
 
 const port = process.env.PORT || 3000;
@@ -39,6 +40,16 @@ app.use(
 			return res.status(401).send({
 				error: {
 					message: 'Token Expired. Log in again',
+				},
+			});
+		}
+
+		// Handling zod schema validation errors
+
+		if (err instanceof ZodError) {
+			return res.status(400).send({
+				error: {
+					message: err.errors[0].message,
 				},
 			});
 		}
