@@ -7,8 +7,8 @@ const validate =
 		try {
 			schema.parse(req.body);
 			next();
-		} catch (e: any) {
-			return res.status(400).send(e.errors);
+		} catch (e) {
+			next(e);
 		}
 	};
 
