@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import ApplicationError from './src/error';
 import { TokenExpiredError } from 'jsonwebtoken';
 import { ZodError } from 'zod';
+import { createConnection } from './src/db';
 dotenv.config();
 
 const port = process.env.PORT || 3000;
@@ -48,7 +49,7 @@ app.use(
 		if (err instanceof ZodError) {
 			return res.status(400).send({
 				error: {
-					message: err.errors[0].message,
+					message: err?.errors[0]?.message,
 				},
 			});
 		}
@@ -62,6 +63,7 @@ app.use(
 
 async function main() {
 	try {
+		await createConnection();
 		app.listen(port, () => {
 			console.log('Express application running on port', port);
 		});
